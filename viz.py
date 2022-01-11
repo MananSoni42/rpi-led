@@ -7,18 +7,18 @@ from pprint import pprint
 from rpi_ws281x import PixelStrip, Color
 from config import *
 from type.out import update
-from type.energy import ledcolors as energy_cols
+#from type.energy import ledcolors as energy_cols
 from type.freq import ledcolors as freq_cols
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--type" , help="Choose type of visualiztion [energy | freq]")
 parser.add_argument("--out" , help="Choose output [led | plt]")
 args = parser.parse_args()
-print(args)
-#strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
+
+strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
 
 viz_type = {
-    'energy': energy_cols,
+    'energy': freq_cols,
     'freq': freq_cols,
 }
 
@@ -59,7 +59,11 @@ def audio_func(audio):
     while audio.shape[0] > 0 and count <= TMAX:
         print(count)
         data, cols = viz_type[args.type](audio)
-        update(data, cols, type=args.out)
+        #update(data, cols, _type=args.out, strip=strip)
+        for i in range(LED_COUNT):
+            print('\t', i, (int(255*cols[i][0]), int(255*cols[i][1]), int(255*cols[i][2])))
+            strip.setPixelColor(i, Color(int(255*cols[i][0]), int(255*cols[i][1]), int(255*cols[i][2])))
+            strip.show()
         count += 1
         return False
     return True

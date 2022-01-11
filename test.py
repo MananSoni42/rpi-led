@@ -18,7 +18,7 @@ strip.begin()
 def color(strip, color):
 	for i in range(LED_COUNT):
 		strip.setPixelColor(i, color)
-		strip.show()
+	strip.show()
 
 print('Red')
 color(strip, Color(255,0,0))
