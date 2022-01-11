@@ -16,6 +16,7 @@ parser.add_argument("--out" , help="Choose output [led | plt]")
 args = parser.parse_args()
 
 strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
+strip.begin()
 
 viz_type = {
     'energy': freq_cols,
@@ -59,11 +60,7 @@ def audio_func(audio):
     while audio.shape[0] > 0 and count <= TMAX:
         print(count)
         data, cols = viz_type[args.type](audio)
-        #update(data, cols, _type=args.out, strip=strip)
-        for i in range(LED_COUNT):
-            print('\t', i, (int(255*cols[i][0]), int(255*cols[i][1]), int(255*cols[i][2])))
-            strip.setPixelColor(i, Color(int(255*cols[i][0]), int(255*cols[i][1]), int(255*cols[i][2])))
-            strip.show()
+        update(data, cols, _type=args.out, strip=strip)
         count += 1
         return False
     return True
