@@ -10,7 +10,8 @@ def ledcolors(audio):
     data = np.absolute(np.fft.fft(audio))
     ydata, _ = np.histogram(data, bins=LED_COUNT//2)
     ydata = np.concatenate([ydata[::-1], ydata])
-    ydata = gaussian_filter1d(np.log(1+ydata), sigma=1)
+    ydata = gaussian_filter1d(np.log(1+ydata), sigma=5)
     ydata = ydata.astype(np.float32)/np.max(ydata)
+    brightness = max( np.mean(np.absolute(audio)) / np.max(np.absolute(audio)), 0)
     cols = [cmap.to_rgba(cval(i,ydata[i]))[:3] for i in range(LED_COUNT)]
-    return ydata, cols
+    return ydata, cols, brightness
