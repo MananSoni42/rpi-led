@@ -15,8 +15,10 @@ parser.add_argument("--type" , help="Choose type of visualiztion [energy | freq]
 parser.add_argument("--out" , help="Choose output [led | plt]")
 args = parser.parse_args()
 
-strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
-strip.begin()
+strip = None
+if args.type == 'led':
+    strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
+    strip.begin()
 
 viz_type = {
     'energy': freq_cols,
@@ -68,6 +70,7 @@ def audio_func(audio):
 
 print('overflows', start_stream(audio_func))
 
-for i in range(LED_COUNT):
-    strip.setPixelColor(i, Color(0,0,0))
-strip.show()
+if args.type == 'led':
+    for i in range(LED_COUNT):
+        strip.setPixelColor(i, Color(0,0,0))
+    strip.show()
