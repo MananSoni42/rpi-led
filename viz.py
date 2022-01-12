@@ -58,9 +58,9 @@ def start_stream(callback):
 def audio_func(audio):
     global count, strip
     while audio.shape[0] > 0 and count <= TMAX:
-        print(count)
-        data, cols = viz_type[args.type](audio)
-        update(data, cols, _type=args.out, strip=strip)
+        data, cols, brightness = viz_type[args.type](audio)
+        print(count, int(255*brightness))
+        update(data, cols, brightness, _type=args.out, strip=strip)
         count += 1
         return False
     return True
@@ -68,3 +68,6 @@ def audio_func(audio):
 
 print('overflows', start_stream(audio_func))
 
+for i in range(LED_COUNT):
+    strip.setPixelColor(i, Color(0,0,0))
+strip.show()
