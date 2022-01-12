@@ -61,7 +61,7 @@ def audio_func(audio):
     global count, strip
     while audio.shape[0] > 0 and count <= TMAX:
         data, cols, brightness = viz_type[args.type](audio)
-        print(count, int(255*brightness))
+        print(count, brightness)
         update(data, cols, brightness, _type=args.out, strip=strip)
         count += 1
         return False
