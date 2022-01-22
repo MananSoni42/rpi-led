@@ -11,7 +11,7 @@ LED_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
 MIC_RATE = 44100
 FPS = 30
-TMAX = 200
+TMAX = 1000
 count = 1
 
 # hsv, seismic, autumn

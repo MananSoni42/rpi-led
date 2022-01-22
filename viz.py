@@ -7,13 +7,30 @@ from pprint import pprint
 from rpi_ws281x import PixelStrip, Color
 from config import *
 from type.out import update
-#from type.energy import ledcolors as energy_cols
 from type.freq import ledcolors as freq_cols
+from type.wave import ledcolors as wave_cols
+from scipy.ndimage import gaussian_filter1d
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--type" , help="Choose type of visualiztion [energy | freq]")
+parser.add_argument("--type" , help="Choose type of visualiztion [wave | freq]")
 parser.add_argument("--out" , help="Choose output [led | plt]")
 args = parser.parse_args()
+
+bmean, bmin, bmax, bcount = 0, np.inf, 0, 0
+
+def get_brightness(b):
+    global bmean, bmin, bmax, bcount
+    bmean = (bcount*bmean + b)/(bcount+1)
+    bcount += 1
+    bmin = min(bmin, b)
+    bmax = max(bmax, b)
+    
+    a = 0.75
+
+    if count < 10:
+        return 0.3
+    else:
+        return max(min((b - (a*bmean + (1-a)*bmin)) / ((1-a)*(bmax-bmin)), 1), 0)
 
 strip = None
 if args.type == 'led':
@@ -21,8 +38,8 @@ if args.type == 'led':
     strip.begin()
 
 viz_type = {
-    'energy': freq_cols,
     'freq': freq_cols,
+    'wave': wave_cols
 }
 
 cmap = cm.ScalarMappable(
@@ -59,10 +76,14 @@ def start_stream(callback):
 
 def audio_func(audio):
     global count, strip
-    while audio.shape[0] > 0 and count <= TMAX:
-        data, cols, brightness = viz_type[args.type](audio)
-        print(count, brightness)
-        update(data, cols, brightness, _type=args.out, strip=strip)
+    while count <= TMAX:
+        brightness = np.sqrt((np.sum(np.square(audio))))/audio.shape[0]
+        brightness1 = get_brightness(brightness)
+        print(count, '/', TMAX, bmin, bmean, bmax)
+        print(brightness, brightness1)
+        audio = gaussian_filter1d(audio, sigma=50)
+        data = viz_type[args.type](audio)
+        update(data, brightness1, _type=args.out, strip=strip)
         count += 1
         return False
     return True
