@@ -3,7 +3,7 @@ from rpi_ws281x import Color
 from config import LED_COUNT, cmap, cval
 import numpy as np
 
-def update(data, brightness, _type, strip=None):
+def update(data, brightness, _type, strip):
     cols = [cmap.to_rgba(cval(i,data[i]))[:3] for i in range(LED_COUNT)]
     if _type == 'led':
         strip.setBrightness(int(255*brightness))

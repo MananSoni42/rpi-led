@@ -16,24 +16,26 @@ parser.add_argument("--type" , help="Choose type of visualiztion [wave | freq]")
 parser.add_argument("--out" , help="Choose output [led | plt]")
 args = parser.parse_args()
 
-bmean, bmin, bmax, bcount = 0, np.inf, 0, 0
+bmean, bmin, bmax, bcount, bprev = 0, 1e6, 0, 0, 0.3
 
 def get_brightness(b):
-    global bmean, bmin, bmax, bcount
-    bmean = (bcount*bmean + b)/(bcount+1)
+    global bmean, bmin, bmax, bcount, bprev
+    w,a = 0.7, 0.75
+    bmean = w*bmean + (1-w)*(bcount*bmean + b)/(bcount+1)
     bcount += 1
-    bmin = min(bmin, b)
-    bmax = max(bmax, b)
-    
-    a = 0.75
+    bmin = w*bmin + (1-w)*min(bmin,b)
+    bmax = w*bmax + (1-w)*max(bmax,b)
 
     if count < 10:
         return 0.3
     else:
-        return max(min((b - (a*bmean + (1-a)*bmin)) / ((1-a)*(bmax-bmin)), 1), 0)
+        bcurr = max(min((b - (a*bmean + (1-a)*bmin)) / ((1-a)*(bmax-bmin + 1e-3)), 1), 0)
+        bfinal = w*bcurr + (1-w)*bprev
+        bprev = bcurr
+        return bfinal
 
 strip = None
-if args.type == 'led':
+if args.out == 'led':
     strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
     strip.begin()
 
