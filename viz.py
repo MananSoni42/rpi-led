@@ -83,7 +83,7 @@ def audio_func(audio):
     while count <= TMAX:
         brightness = np.sqrt((np.sum(np.square(audio))))/audio.shape[0]
         brightness1 = get_brightness(brightness)
-        print(count, '/', TMAX)
+        print(count, '/', TMAX, brightness1)
         audio = gaussian_filter1d(audio, sigma=10)
         data, cmap = viz_type[args.type](audio)
         update(data, brightness1, _type=args.out, strip=strip, cmap=cmap)

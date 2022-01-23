@@ -9,7 +9,7 @@ LED_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
 MIC_RATE = 44100
 FPS = 40
-TMAX = 100
+TMAX = 500
 count = 1
 
 
