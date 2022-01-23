@@ -2,7 +2,6 @@ import numpy as np
 from pprint import pprint
 from config import LED_COUNT
 from scipy.ndimage import gaussian_filter1d
-from scipy.signal import find_peaks
 
 def ledcolors(audio):
     data = np.absolute(np.fft.fft(audio))

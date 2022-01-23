@@ -15,7 +15,7 @@ from type.discrete import ledcolors as discrete_cols
 viz_type = {
     'freq': freq_cols,
     'wave': wave_cols,
-    'length': discrete_cols,
+    'discrete': discrete_cols,
 }
 
 outs = ['led', 'comp']
