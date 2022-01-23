@@ -1,20 +1,33 @@
 import argparse
+import sys
 import numpy as np
 import pyaudio
 import matplotlib.pyplot as plt
-from scipy.signal import savgol_filter
-from pprint import pprint
 from rpi_ws281x import PixelStrip, Color
 from config import *
 from type.out import update
-from type.freq import ledcolors as freq_cols
-from type.wave import ledcolors as wave_cols
 from scipy.ndimage import gaussian_filter1d
 
+from type.freq import ledcolors as freq_cols
+from type.wave import ledcolors as wave_cols
+from type.discrete import ledcolors as discrete_cols
+
+viz_type = {
+    'freq': freq_cols,
+    'wave': wave_cols,
+    'length': discrete_cols,
+}
+
+outs = ['led', 'comp']
+
 parser = argparse.ArgumentParser()
-parser.add_argument("--type" , help="Choose type of visualiztion [wave | freq]")
-parser.add_argument("--out" , help="Choose output [led | plt]")
+parser.add_argument("--type" , help=f'hoose type of visualiztion [{" | ".join(viz_type.keys())}]')
+parser.add_argument("--out" , help=f'Choose output [{" | ".join(outs)}]')
 args = parser.parse_args()
+
+if args.type not in viz_type.keys() or args.out not in outs:
+    print('No matching argument found')
+    sys.exit(1)
 
 bmean, bmin, bmax, bcount, bprev = 0, 1e6, 0, 0, 0.3
 
@@ -38,17 +51,6 @@ strip = None
 if args.out == 'led':
     strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
     strip.begin()
-
-viz_type = {
-    'freq': freq_cols,
-    'wave': wave_cols
-}
-
-cmap = cm.ScalarMappable(
-    norm=colors.Normalize(vmin=0, vmax=1, clip=False),
-    cmap='hsv')
-
-cval = lambda i,x: (x+i/60) if (x+i/60) < 1 else (x - 1 + i/60)
 
 def start_stream(callback):
     p = pyaudio.PyAudio()
@@ -81,11 +83,10 @@ def audio_func(audio):
     while count <= TMAX:
         brightness = np.sqrt((np.sum(np.square(audio))))/audio.shape[0]
         brightness1 = get_brightness(brightness)
-        print(count, '/', TMAX, bmin, bmean, bmax)
-        print(brightness, brightness1)
-        audio = gaussian_filter1d(audio, sigma=50)
-        data = viz_type[args.type](audio)
-        update(data, brightness1, _type=args.out, strip=strip)
+        print(count, '/', TMAX)
+        audio = gaussian_filter1d(audio, sigma=10)
+        data, cmap = viz_type[args.type](audio)
+        update(data, brightness1, _type=args.out, strip=strip, cmap=cmap)
         count += 1
         return False
     return True

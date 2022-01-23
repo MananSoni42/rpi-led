@@ -8,4 +8,4 @@ def ledcolors(audio):
     ydata += np.min(ydata)
     ydata = ydata.astype(np.float32)/np.max(ydata)
     
-    return ydata
+    return ydata, 'hsv'

@@ -1,5 +1,3 @@
-from matplotlib import cm, colors
-
 # LED strip configuration:
 LED_COUNT = 60        # Number of LED pixels.
 LED_PIN = 18          # GPIO pin connected to the pixels (18 uses PWM!).
@@ -11,15 +9,7 @@ LED_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
 MIC_RATE = 44100
 FPS = 40
-TMAX = 1000
+TMAX = 100
 count = 1
-
-# hsv, seismic, autumn, magma
-cmap = cm.ScalarMappable(
-    norm=colors.Normalize(vmin=0, vmax=1, clip=False),
-    cmap='magma')
-
-#cval = lambda i,x: (x+i/60) if (x+i/60) < 1 else (x - 1 + i/60)
-cval = lambda i,x: x
 
 
